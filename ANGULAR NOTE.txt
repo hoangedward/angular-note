@@ -1,0 +1,157 @@
+ANGULAR NOTE!!!!!!!!!!!!!!!!!!!!!!
+
+https://www.udemy.com/the-complete-guide-to-angular-2/
+
+Getting Started - Project structure:
+
+	014 How an Angular App gets Loaded and Started
+		When running ng serve
+		src\index.html
+			<!doctype html>
+			<html>
+				<head>...</head>
+				<body>
+				  <app-root>Loading...</app-root>
+				</body>
+			</html>
+
+		<app-root> is came from src\app\app.component.ts
+			@Component({
+			  selector: 'app-root',
+			  templateUrl: './app.component.html',
+			  styleUrls: ['./app.component.css']
+			})
+			export class AppComponent implements OnInit {
+			  ...
+			}
+
+		src\main.ts is called when Angular get started as bootstrap point:
+			import { AppModule } from './app/app.module';
+			platformBrowserDynamic().bootstrapModule(AppModule);
+
+		AppModule is:
+			src\app\app.module.ts
+			import { BrowserModule } from '@angular/platform-browser';
+			@NgModule({
+			  declarations: [
+			    AppComponent
+			  ],
+			  imports: [
+			    BrowserModule,
+			    HttpModule,
+			    AppRoutingModule,
+			    SharedModule,
+			    ShoppingListModule,
+			    AuthModule,
+			    CoreModule
+			  ],
+			  bootstrap: [AppComponent]
+			})
+			export class AppModule { }
+
+	src\app\app.component.* is where we start to place our code
+
+	Register new component in app.component.ts declarations section
+
+	ng g c componentname
+
+	024 String Interpolation
+		{{ ingredient.name }} ({{ ingredient.amount }}) {{ 'server' }}
+
+
+	.angular-cli.json
+		Configuration for Angular app
+
+
+Debugging
+	- Angular support Source map
+	- Or we can install extension: https://augury.rangle.io/
+
+
+Components
+
+
+Component selector
+	
+	
+
+Databinding
+	030 Two-Way-Databinding
+	https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html
+
+	@Input 062 Binding to Custom Properties
+
+	@Output/Event: How to publish/subscribe event between components: 064 Binding to Custom Events
+
+	Use Local Reference / ViewChild instead of Two-way binding: 069 Using Local References in Templates, 070 Getting Access to the Template  DOM with ViewChild
+
+	ng-content: 071 Projecting Content into Components with ng-content, 075 Getting Access to ng-content with ContentChild
+
+
+Directives
+	*ngIf, *ngFor, *ngClass, *ngStyle
+	We cannot have more than one directive in the same component
+
+Using Services & Dependency Injection
+Changing Pages with Routing
+Observables
+Handling Forms in Angular Apps
+Using Pipes to Transform Output
+Authentication  Route Protection in Angular Apps
+Using Angular Modules  Optimizing Apps
+Deploying an Angular App
+The HttpClient
+State Management - Working with NgRx in our Project
+	https://blog.nrwl.io/managing-state-in-angular-applications-22b75ef5625f
+Angular Universal
+Unit Testing in Angular Apps
+What's new in Angular 4, 5, 6, 7
+	https://blog.ninja-squad.com/2017/03/24/what-is-new-angular-4/
+Custom Project  Workflow Setup
+TypeScript Introduction (for Angular 2 Usage)
+Angular Animations
+
+Useful links:
+	https://github.com/stefanoslig/angular-ngrx-nx-realworld-example-app
+	
+	
+Core features of Angular
+- Component
+- Binding (data, event), two-ways bindings (https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html)
+- Directives
+
+
+@Input(): used for parent can pass data into children components
+@Output(): used for other component can get data from it
+
+Debug using Augury extension
+
+Event, emit...
+
+Observables
+
+
+Hierarchical Injector:
+	A Service is used for current component and all its children components
+	
+Universal Rendering
+Client side rendering: Client render HTML page by JS => cannot optimize for Search engine
+Server side rendering: Server render HTML by JS and response to Client. Note: lazy initializing
+https://github.com/angular/angular-cli/wiki/stories-universal-rendering
+
+Lazy load component?
+
+CSS is encapsulated in component scope
+
+24
+ES6: ... Spread operator
+rxjs
+slice()
+arrow function
+Side effects? ngrx/effects
+store-devtools
+Redux devtools
+
+State management
+	Service vs NgRx? It depend
+	https://blog.nrwl.io/managing-state-in-angular-applications-22b75ef5625f
