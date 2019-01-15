@@ -65,7 +65,7 @@ Getting Started - Project structure:
 
 Debugging
 	- Angular support Source map
-	- Or we can install extension: https://augury.rangle.io/
+	- Or we can install Augury extension: https://augury.rangle.io/
 
 
 Components
@@ -91,24 +91,205 @@ Databinding
 Directives
 	*ngIf, *ngFor, *ngClass, *ngStyle
 	We cannot have more than one directive in the same component
+	086 Using the Renderer to build a Better Attribute Directive
+	@HostListener to listen to an event from host component
+	@HostBinding to bind to a specific attribute of host component
+
+	Directive property binding:
+	@Directive({
+  selector: '[appBetterHighlight]'
+	})
+	export class BetterHighlightDirective implements OnInit {
+	  @Input() defaultColor: string = 'transparent';
+	  @Input('appBetterHighlight') highlightColor: string = 'blue'; // default binding
+	  @HostBinding('style.backgroundColor') backgroundColor: string;
+
+	<p [appBetterHighlight]="'red'" defaultColor="yellow">Style me with a better directive!</p>
+	There are two style of binding:
+		defaultColor="yellow"
+		[defaultColor]="'yellow'"
+
+
+	*ngIf will internally be converted to
+	<ng-template [ngIf]="..."></ng-template>
 
 Using Services & Dependency Injection
+
+	@Injectable
+
+	To make it simple to develop application. Instead of using event and binding between components
+	Hierarchical Injector:
+		A Service is used for current component and all its children components
+			App module: application-wide
+			App component: app component + its child components. But not available for other services
+	@Component({
+		providers: [XxxService]
+	})
+	constructor(private xxx: XxxService) {}
+
+	If we place providers: [XxxService] in child component, it will OVERWRITE the parent service
+
 Changing Pages with Routing
+	Setting Routes at app.module.ts but we should extract route setting to separate module
+	In *.html
+		<router-outlet>
+		[routerLink] = "'/edit'"
+		[queryParam] {allowEdit: 1}
+		[fragment]="'loading'"
+		==> http:localhost:3000/edit?allowEdit=1#loading
+		/xxx: absolute path
+		xxx: relative path
+		routerLinkActive="active" (active is a css class)
+			exact: true
+
+		Router programmically
+			router.navigate(['/servers'], {relativeTo: ...});
+
+		user/:id
+		Using ActivatedRoute.snapshot.params['id']
+		Reactive approach:
+			ActivatedRoute.params.subscribe(...)
+
+		Remember to unsubscribe ngOnDestroy
+
+		Child nested route:
+			{ path: '', component: HomeComponent },
+			  { path: 'users', component: UsersComponent, children: [
+			    { path: ':id/:name', component: UserComponent }
+			  ] }
+	
+		Wildcard:
+			"**": not-found...
+
+		Protecting route with Guard
+			AuthGuard implements CanActivate {
+				canActivate(...) {
+					return true/false;
+				}
+			}
+
+			{path: 'xxx', canActivate: [AuthGuard], ...}
+
+			CanActivateChild
+
+			We can control route when canDeactivate
+
+
+
+
 Observables
 Handling Forms in Angular Apps
+	Two approachs:
+		Template Driven
+		Reactive
+
+	*** Template Driven ***
+	ngModel, name
+	ngSubmit, #f="ngForm"
+
+	Accessing the Form
+		@ViewChild('f')
+
+	We can use value of f in the template
+
+	We can overwrite the css class for error
+	app.component.css
+		input.ng-invalid.ng-touched {
+			border: xxx
+		}
+
+	Local reference: #abc
+
+	Setting default value - one way binding:
+	[ngModel]="defaultQuestion"
+	defaultQuestion is defined in ts file
+
+	Two way binding:
+	[(ngModel)]="xxx"
+
+	ngModelGroup="userData"
+
+	Programatically setting value for Form
+	*.ts
+		this.signupForm.setValue({
+			setting value for the WHOLE form
+			(mapping by name attribute)
+		});
+		this.signupForm.patchValue({
+			any field
+		});
+
+
+	*** Reactive approach ***
+
+
+
+
+
 Using Pipes to Transform Output
+	{{ server.instanceType | uppercase }}
+	{{ server.started | date:'fullDate' }}
+	https://angular.io/api?type=pipe
+
+	pipe can be chained
+
+	Custom pipe:
+		@Pipe({
+			name: 'shorten'
+		})
+		export class ShortenPipe implements PipeTransform {
+			transform(value: any, arg: number, anotherArg: string) {
+				return ...
+			}
+		}
+
+		{{ server.instanceType | uppercase | shorten:5:'A' }}
+
+		<input type="text" [(ngModel)]='filteredStatus' />
+		*ngFor="let server of servers | filter:filteredStatus"
+
+		arg? == arg... in Java
+
+		async pipe :)
+
+
 Authentication  Route Protection in Angular Apps
 Using Angular Modules  Optimizing Apps
 Deploying an Angular App
 The HttpClient
 State Management - Working with NgRx in our Project
+	Side effects? ngrx/effects
+	store-devtools
+	Redux devtools
+
+	State management
+		Service vs NgRx? It depend
 	https://blog.nrwl.io/managing-state-in-angular-applications-22b75ef5625f
+
+
 Angular Universal
+	Client side rendering: Client render HTML page by JS => cannot optimize for Search engine
+	Server side rendering: Server render HTML by JS and response to Client. Note: lazy initializing
+	https://github.com/angular/angular-cli/wiki/stories-universal-rendering
+		Lazy load component? But it will come soon
+		Never directly access to the DOM, because on Server side, there is no DOM
+
+
 Unit Testing in Angular Apps
+
+
+
 What's new in Angular 4, 5, 6, 7
 	https://blog.ninja-squad.com/2017/03/24/what-is-new-angular-4/
+
+
+
 Custom Project  Workflow Setup
+
+
 TypeScript Introduction (for Angular 2 Usage)
+
+
 Angular Animations
 
 Useful links:
@@ -124,22 +305,11 @@ Core features of Angular
 @Input(): used for parent can pass data into children components
 @Output(): used for other component can get data from it
 
-Debug using Augury extension
+
 
 Event, emit...
 
 Observables
-
-
-Hierarchical Injector:
-	A Service is used for current component and all its children components
-	
-Universal Rendering
-Client side rendering: Client render HTML page by JS => cannot optimize for Search engine
-Server side rendering: Server render HTML by JS and response to Client. Note: lazy initializing
-https://github.com/angular/angular-cli/wiki/stories-universal-rendering
-
-Lazy load component?
 
 CSS is encapsulated in component scope
 
@@ -148,10 +318,3 @@ ES6: ... Spread operator
 rxjs
 slice()
 arrow function
-Side effects? ngrx/effects
-store-devtools
-Redux devtools
-
-State management
-	Service vs NgRx? It depend
-	https://blog.nrwl.io/managing-state-in-angular-applications-22b75ef5625f
