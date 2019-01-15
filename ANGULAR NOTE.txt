@@ -4,6 +4,8 @@ https://www.udemy.com/the-complete-guide-to-angular-2/
 
 Getting Started - Project structure:
 
+https://angular.io/guide/file-structure
+
 	014 How an Angular App gets Loaded and Started
 		When running ng serve
 		src\index.html
@@ -72,8 +74,8 @@ Components
 
 
 Component selector
-	
-	
+
+
 
 Databinding
 	030 Two-Way-Databinding
@@ -86,6 +88,8 @@ Databinding
 	Use Local Reference / ViewChild instead of Two-way binding: 069 Using Local References in Templates, 070 Getting Access to the Template  DOM with ViewChild
 
 	ng-content: 071 Projecting Content into Components with ng-content, 075 Getting Access to ng-content with ContentChild
+
+	https://angular.io/guide/template-syntax#one-way-in
 
 
 Directives
@@ -109,9 +113,10 @@ Directives
 		defaultColor="yellow"
 		[defaultColor]="'yellow'"
 
-
+		The asterisk (*) prefix
 	*ngIf will internally be converted to
 	<ng-template [ngIf]="..."></ng-template>
+	https://angular.io/guide/structural-directives#the-asterisk--prefix
 
 Using Services & Dependency Injection
 
@@ -157,7 +162,7 @@ Changing Pages with Routing
 			  { path: 'users', component: UsersComponent, children: [
 			    { path: ':id/:name', component: UserComponent }
 			  ] }
-	
+
 		Wildcard:
 			"**": not-found...
 
@@ -221,6 +226,13 @@ Handling Forms in Angular Apps
 
 
 	*** Reactive approach ***
+	[formGroup]
+
+	functionAAA.bind(this); to bind this to functionAAA
+
+	valueChanges and statusChanges
+
+	https://www.tiepphan.com/thu-nghiem-voi-angular-reactive-forms-trong-angular/
 
 
 
@@ -252,6 +264,13 @@ Using Pipes to Transform Output
 
 		async pipe :)
 
+
+Making Http Requests
+	http.post return a observable, therefore, we need to subscribe to it
+	post: append new data
+	put: replace old data
+
+	We can use pipe async with http request (observable)
 
 Authentication  Route Protection in Angular Apps
 Using Angular Modules  Optimizing Apps
@@ -294,8 +313,8 @@ Angular Animations
 
 Useful links:
 	https://github.com/stefanoslig/angular-ngrx-nx-realworld-example-app
-	
-	
+
+
 Core features of Angular
 - Component
 - Binding (data, event), two-ways bindings (https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html)
