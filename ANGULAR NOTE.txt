@@ -2,11 +2,26 @@ ANGULAR NOTE!!!!!!!!!!!!!!!!!!!!!!
 
 https://www.udemy.com/the-complete-guide-to-angular-2/
 
-Getting Started - Project structure:
+Reference:
+	https://www.tektutorialshub.com/angular-2-tutorial/
+
+======== Project structure:
 
 https://angular.io/guide/file-structure
 
+	1. Loading the Angular Core Libraries
+	2. Loading the Main entry point
+	3. Loading the Root Module
+	4. Loading the Root Component
+	5. Loading the Template
+
 	014 How an Angular App gets Loaded and Started
+
+	The Angular finds out about the entry point of our application from the configuration file angular-cli.json
+		"index": "index.html",
+    "main": "main.ts",      //main
+    "test": "test.ts",
+
 		When running ng serve
 		src\index.html
 			<!doctype html>
@@ -53,51 +68,252 @@ https://angular.io/guide/file-structure
 
 	src\app\app.component.* is where we start to place our code
 
+	The Every Angular module must have at least one root component.
+
 	Register new component in app.component.ts declarations section
 
 	ng g c componentname
-
-	024 String Interpolation
-		{{ ingredient.name }} ({{ ingredient.amount }}) {{ 'server' }}
 
 
 	.angular-cli.json
 		Configuration for Angular app
 
+Angular Folder Structure Best Practices
+https://www.tektutorialshub.com/angular/angular-folder-structure-best-practices/
+	Root Module
+		The Angular requires one module to be loaded as the application starts. We call this as root module. The root module loads the root component and all other modules
+	Feature Module
+		The Features Module implements a specific feature of the Application. All the components, pipes & directives which implement the feature become the part of the module.
+	Shared Module
+		There are many components, directives & pipes, which we may like to share across various modules. All these components should go into shared module.
+		The shared module and must declare the components, pipes and directives using the declarations metadata and export it using the exports metadata
+		The Other Modules can import the shared modules and use the exported components, directives & pipes
+		** The Services must not be defined here.
+		The commonly required angular modules like ( CommonModule, FormsModule etc) or third party modules can be imported here and re exported.
+	Core Module
+		The core module must be imported only in the root module. Other modules must not import the core modules.
 
-Debugging
+
+======== Debugging
 	- Angular support Source map
 	- Or we can install Augury extension: https://augury.rangle.io/
 
 
-Components
+======== Components
+
+	The Components consists of three main building blocks
+		Template
+		Class
+		MetaData (The Metadata is defined with a decorator.)
+			Selector
+				Selector specifies the simple CSS selector, where our view representing the component is placed by the Angular.
+			Providers
+				The Providers are the services, that our component going to use. The Services provide service to the Components or to the other Services.
+			Directives
+				The directives that this component going to use are listed here.
+
+	Remember to Register the new Angular Component to Angular Module
+
+	Component selector
+		@Component({
+	  	selector: 'app-root',
+	  })
+	  *.html
+	  <body>
+			<app-root></app-root>
+		</body>
+
+		Using CSS class name
+		@Component({
+			selector: '.app-root'
+		})
+		*.html
+		<div class="app-root"></div>
+
+		Using attribute name
+		@Component({
+			selector: '[app-root]'
+		})
+		*.html
+		<div app-root></div>
 
 
-Component selector
+======== Databinding
+
+	https://www.tektutorialshub.com/angular/angular-data-binding/
+
+	Type of binding:
+		Interpolation (One Way Bindings)
+		Property Bindings (One Way Bindings)
+		Event Bindings (One Way Bindings)
+		Two Way Bindings
+
+		Template Expressions
+		Template statements
+
+	Template Expression
+	export class AppComponent
+	{
+	    title : string ="app"
+	}
+	<h1>
+    Welcome to {{title}}!
+	</h1>
+	* The Template expression should not change the state of the application
+
+	Template statement
+		Template statement is similar to Template expression but can CHANGE the state of the application.
+		Template statements are used in case of Event Bindings.
+
+	String Interpolation - one-way binding (using double curly braces)
+		{{ ingredient.name }} ({{ ingredient.amount }}) {{ 'server' }}
+
+		Invoke a method in the component
+		<p>{{getTitle()}}</p>
+
+		Bind to the Element Property
+		<p style.color={{color}}>This is red</p>
+
+		Interpolation Expression must result in a string. If we return an object it will not work
+
+	Property Binding (using [] square brackets)
+		[Property]=”expression”
+		The Binding Target is placed inside the square brackets. The Binding source is enclosed in quotes.
+		Property binding is one way from Component to the Target in the template.
+
+		<p [innerText]="title"></p>
+		<p [innerText]="getTitle()"></p>
+
+		Property Binding Vs Interpolation
+		Interpolation requires expression to return a string. If you want to set an element property to a non-string data value, you must use property binding.
+
+	Event Binding (using () parenthesis)
+		<button (click)=’ClickPressed()’>
+		buttonClicked() : void {
+	    this.count=this.count+1;
+	    console.log("Button Clicked")
+		}
+
+	Two Way Binding by using the ngModel directive
+		Two-way binding means that changes made in the component data are propagated to the view and that any changes made in the view are immediately updated in the underlying component data.
+		Two-way binding is used mainly in data entry forms
+
+		<input [(ngModel)] =’name’></input>
+		Note that both square & parentheses are used here. This is now known as Banana in a box syntax. The square indicates the Property binding & parentheses indicates the event binding.
+
+		https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html
+
+		@Input 062 Binding to Custom Properties
+
+		@Output/Event: How to publish/subscribe event between components: 064 Binding to Custom Events
+
+		Use Local Reference / ViewChild instead of Two-way binding: 069 Using Local References in Templates, 070 Getting Access to the Template  DOM with ViewChild
+
+		ng-content: 071 Projecting Content into Components with ng-content, 075 Getting Access to ng-content with ContentChild
+
+	The Angular follows component based Architecture
+
+	Angular Pass data to child component
+		@Input(): used for parent can pass data into children components
+			export class ChildComponent {
+			     @Input() count: number;
+			}
+			OR
+		 @Component({
+		    selector: 'child-component',
+		    inputs: ['count'],
+		    template: `<h2>Child Component</h2>
+		    current count is {{ count }}
+		`
+		})
+		export class ChildComponent {}
+
+		We can Alias input Property
+
+		How to use ngOnChanges for Change Detection
+			export class ChildComponent implements OnChanges {
+			    @Input() count: number;
+			 
+			    ngOnChanges(changes: SimpleChanges) {
+			 			...
+			    }
+			}
+
+			OR using Input setter
+			@Input()
+			set count(count: number) {
+			    this._count = count;
+			    console.log(count);
+			}
 
 
+		There are three ways in which parent component can interact with the child component
+			Parent Listens to Child Event
+			Parent uses Local Variable to access the child
+			Parent uses a @ViewChild to get reference to the child component
 
-Databinding
-	030 Two-Way-Databinding
-	https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html
+		@Output(): used to pass data to parent component
+			Child component:
+				@Output() countChanged: EventEmitter<number> =   new EventEmitter();
+			Parent component:
+				<child-component [count]=ClickCounter (countChanged)="countChangedHandler($event)"></child-component>`
 
-	@Input 062 Binding to Custom Properties
+		Parent uses local variable to access the Child in Template
+			Child component:
+				increment() {
+	        this.count++;
+	      }
+			Parent component:
+				<child-component #child></child-component>
+				<button (click)="child.increment()">Increment</button>
 
-	@Output/Event: How to publish/subscribe event between components: 064 Binding to Custom Events
+		Parent uses a @ViewChild() to get reference to the Child Component
+			Parent component:
+				template: <child-component></child-component>
+				ts:
+					@ViewChild(ChildComponent) child: ChildComponent;
+					this.child.increment();
 
-	Use Local Reference / ViewChild instead of Two-way binding: 069 Using Local References in Templates, 070 Getting Access to the Template  DOM with ViewChild
 
-	ng-content: 071 Projecting Content into Components with ng-content, 075 Getting Access to ng-content with ContentChild
+======== Component Life Cycle Hooks in Angular
+	Here is the complete list of life cycle hooks provided by the Angular
+		ngOnChanges
+		ngOnInit
+		ngDoCheck
+		ngAfterContentInit
+		ngAfterContentChecked
+		ngAfterViewInit
+		ngAfterViewChecked
+		ngOnDestroy
 
-	https://angular.io/guide/template-syntax#one-way-in
 
+======== Directives
+	The Angular directive helps us to manipulate the DOM. You can change the appearance, behaviour or a layout of a DOM element using the Directives. They help you to extend HTML
+	There are three kinds of directives in Angular:
+		Component Directive
+		Structural directives
+			Structural directives can change the DOM layout by adding and removing DOM elements. All structural Directives are preceded by Asterix symbol
+		Attribute directives
+			An Attribute or style directive can change the appearance or behaviour of an element.
 
-Directives
-	*ngIf, *ngFor, *ngClass, *ngStyle
-	We cannot have more than one directive in the same component
-	086 Using the Renderer to build a Better Attribute Directive
-	@HostListener to listen to an event from host component
-	@HostBinding to bind to a specific attribute of host component
+	Structural directives
+		*ngIf, *ngFor
+		<tr *ngFor="let movie of movies; let i=index; let o= odd; let e=even;"
+			[ngClass]="{ odd: o, even: e }">
+
+		<tr *ngFor="let movie of movies; trackBy:movie?.title;">
+		? is known as Safe navigation operator ( Elvis operator )
+
+		We cannot have more than one directive in the same component
+		@HostListener to listen to an event from host component
+		@HostBinding to bind to a specific attribute of host component
+
+	Attribute directives
+		ngModel, ngClass, ngStyle
+		<element [ngClass]="'cssClass1 cssClass2'">...</element>
+		<div [ngStyle]="{'color': 'blue', 'font-size': '24px', 'font-weight': 'bold'}">
+		    some text
+		</div>
 
 	Directive property binding:
 	@Directive({
@@ -113,12 +329,42 @@ Directives
 		defaultColor="yellow"
 		[defaultColor]="'yellow'"
 
-		The asterisk (*) prefix
+	The asterisk (*) prefix
 	*ngIf will internally be converted to
 	<ng-template [ngIf]="..."></ng-template>
 	https://angular.io/guide/structural-directives#the-asterisk--prefix
 
-Using Services & Dependency Injection
+
+Using Pipes to Transform Output
+	Angular 2 Pipes helps us to format or transform data to display in our template. They are similar to Filters in AngularJS
+
+	{{ server.instanceType | uppercase }}
+	{{ server.started | date:'fullDate' }}
+	https://angular.io/api?type=pipe
+
+	pipe can be chained
+
+	Custom pipe:
+		@Pipe({
+			name: 'shorten'
+		})
+		export class ShortenPipe implements PipeTransform {
+			transform(value: any, arg: number, anotherArg: string) {
+				return ...
+			}
+		}
+
+		{{ server.instanceType | uppercase | shorten:5:'A' }}
+
+		<input type="text" [(ngModel)]='filteredStatus' />
+		*ngFor="let server of servers | filter:filteredStatus"
+
+		arg? == arg... in Java
+
+		async pipe :)
+
+
+======== Using Services & Dependency Injection
 
 	@Injectable
 
@@ -134,7 +380,21 @@ Using Services & Dependency Injection
 
 	If we place providers: [XxxService] in child component, it will OVERWRITE the parent service
 
-Changing Pages with Routing
+
+	https://www.tektutorialshub.com/angular/angular-injector-injectable-inject/
+	NOTE:
+	The services injected at the module level are app-scoped, which means that they can be accessed from every component/service within the app.Any service provided in the Child Module is available in the entire application.
+	The services is provided in a lazy module are module scoped and available only to the lazy loaded module.
+	The services provided in the Component level are available only to the Component & and to the child components.
+
+	All the application dependencies are registered with the Providers
+
+	Singleton services
+	But if we register the service in @ngModule and also in Component A. The Component A always gets a new instance of the service. While other components gets the instance of the service registered in @ngModule.
+
+
+
+======== Changing Pages with Routing
 	Setting Routes at app.module.ts but we should extract route setting to separate module
 	In *.html
 		<router-outlet>
@@ -180,16 +440,32 @@ Changing Pages with Routing
 			We can control route when canDeactivate
 
 
+	https://www.tektutorialshub.com/angular/angular-routing-between-modules/
 
 
-Observables
-Handling Forms in Angular Apps
+======== Observables
+
+
+
+======== Handling Forms in Angular Apps
 	Two approachs:
 		Template Driven
 		Reactive
 
+	Building Blocks of Angular 2 Forms
+		FormControl
+		FormGroup
+		FormArray
+
+	Some attribute:
+		firstname.errors      // returns the list of errors
+    firstname.dirty       // true if the value has changed (dirty)
+    firstname.touched     // true if input field is touched
+    firstname.valid       // true if the input value has passed all the validation
+
 	*** Template Driven ***
-	ngModel, name
+	Using FormsModule
+	ngForm, ngModel, ngModelGroup
 	ngSubmit, #f="ngForm"
 
 	Accessing the Form
@@ -197,13 +473,26 @@ Handling Forms in Angular Apps
 
 	We can use value of f in the template
 
+	Submit data to Component
+	<form #contactForm="ngForm" (ngSubmit)="onSubmit(contactForm)" >
+	onSubmit(contactForm) {
+      console.log(contactForm.value);
+  }
+
+  Define model - mapping to form control / form group:
+  contact:Contact = { 
+    firstname:"Sachin",
+    lastname:"Tendulkar",
+    address: { city:"Mumbai",street:"Perry Cross Rd", pincode:"400050"}
+ };
+
 	We can overwrite the css class for error
 	app.component.css
 		input.ng-invalid.ng-touched {
 			border: xxx
 		}
 
-	Local reference: #abc
+	Template Variable - Local reference: #abc
 
 	Setting default value - one way binding:
 	[ngModel]="defaultQuestion"
@@ -224,59 +513,162 @@ Handling Forms in Angular Apps
 			any field
 		});
 
+	<div class="form-group">
+     <label for="firstname">First Name</label>
+     <input type="text" class="form-control" name="firstname"l>
+  </div>
+  NOTE: The form-group & form-control are CSS Classes from Bootstrap 3. They have nothing to do with Angular 2 FormGroup & FormControl
 
-	*** Reactive approach ***
-	[formGroup]
+  Template Driven Forms Validation
+  	<input type="text" class="form-control" name="firstname" ngModel #firstname="ngModel" required minlength="10">
+
+  Disabling the Browser (HTML5) validation
+  https://stackoverflow.com/questions/3090369/disable-validation-of-html5-form-elements
+  	<form #contactForm="ngForm" (ngSubmit)="onSubmit(contactForm)" novalidate>
+
+  <button type="submit" [disabled]="!contactForm.valid">Submit</button>
+
+  Display error message
+  <input type="text" name="firstname" ngModel required #firstname="ngModel">
+  <div *ngIf="!firstname?.valid && (firstname?.dirty ||firstname?.touched)" class="alert alert-danger">
+		<div [hidden]="!firstname.errors.required">
+			First Name is required
+		</div>
+	</div>
+
+	*** Reactive approach - Model Driven Forms ***
+	The Angular 2 Model Driven Forms enable us to test our forms without being required to rely on end-to-end tests. Easily to write unit Tests
+	Using ReactiveFormsModule
+
+	Binding the template to the model and submitting the form
+		<form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
 
 	functionAAA.bind(this); to bind this to functionAAA
 
-	valueChanges and statusChanges
+	We can also use Synchronous validator & Asynchronous validator
+
+	Using FormBuilder
+		this.contactForm = this.fb.group({
+		    firstname: [],
+		    lastname: [],
+		    address: this.fb.group({
+		       city :[], 
+		       street: [],
+		       pincode: []
+		    })
+		});
 
 	https://www.tiepphan.com/thu-nghiem-voi-angular-reactive-forms-trong-angular/
 
 
+======== View Encapsulation in Angular
+	https://www.tektutorialshub.com/angular/angular-view-encapsulation/
+	ViewEncapsulation.Emulated 		// (default)
+	ViewEncapsulation.ShadowDOM
+	ViewEncapsulation.None
+
+
+======== Lazy Loading:
+	https://www.tektutorialshub.com/angular/angular-lazy-loading/
+	In Angular, the Lazy loading works at the module level. i.e. you can lazy load only the Angular Modules. The Individual components cannot be loaded lazily.
+	The Lazy loading works via the Angular Router Module. The loadChildren method of the Angular Router is responsible to load the Modules
+
+	We define the modules to be lazy loaded, when we define the routes. 
+	 {path: "admin", loadChildren:'./admin/admin.module#AdminModule'},
+
+	Any Service defined in the Lazy Loaded Module, will not be loaded until the user navigates to that module. Hence they cannot be used anywhere else in the application.
+
+	NOTE:
+	Do not import lazy loaded modules in any other modules. This will make the angular to load the module eagerly and can have unexpected bugs.
+	Be careful when you import other modules in the lazy loaded module. If the other modules providers any services, then the lazy loaded module will get a new instance of the service. This may have unintended side effects, if the services are intended to be app-wide singleton
 
 
 
-Using Pipes to Transform Output
-	{{ server.instanceType | uppercase }}
-	{{ server.started | date:'fullDate' }}
-	https://angular.io/api?type=pipe
-
-	pipe can be chained
-
-	Custom pipe:
-		@Pipe({
-			name: 'shorten'
-		})
-		export class ShortenPipe implements PipeTransform {
-			transform(value: any, arg: number, anotherArg: string) {
-				return ...
-			}
-		}
-
-		{{ server.instanceType | uppercase | shorten:5:'A' }}
-
-		<input type="text" [(ngModel)]='filteredStatus' />
-		*ngFor="let server of servers | filter:filteredStatus"
-
-		arg? == arg... in Java
-
-		async pipe :)
-
-
-Making Http Requests
+======== Making Http Requests
 	http.post return a observable, therefore, we need to subscribe to it
 	post: append new data
 	put: replace old data
 
-	We can use pipe async with http request (observable)
+	We can use pipe | async with http request (observable)
 
-Authentication  Route Protection in Angular Apps
-Using Angular Modules  Optimizing Apps
-Deploying an Angular App
-The HttpClient
-State Management - Working with NgRx in our Project
+======== Authentication  Route Protection in Angular Apps
+	
+	Config database permission for only authenticated can read/write
+
+	this.http.get('URL?auth=' + token);
+
+	Routing protection and redirection
+		this.router.navigate('...');
+
+		create a new guard implements CanActivate
+			canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+		    return this.authService.isAuthenticated();
+		  }
+		\src\app\app-routing.module.ts
+		 { path: 'new', component: RecipeEditComponent, canActivate: [AuthGuard] },
+
+
+======== Using Angular Modules & Optimizing Apps
+	Feature Modules ==> Module by Feature
+	@NgModule
+	Rule: Only call *.forRoot(...) in App Root module
+	In child module, call: *.forChild(...)
+
+	Shared Modules:
+		Tomake some declarations are able to use from outside, we need to exports them
+	Feature Modules should not export imported modules outside
+
+	Lazy Loading
+		There are some modules that may not be touched, so we can use lazy loading to prevent all modules to be downloaded at the begining.
+		1. Remove Module from imports
+		2. { path: 'recipes', loadChildren: './recipes/recipes.module#RecipesModule'},		
+		Result:
+			chunk.js is only load at the point of time we need it.
+
+		If you provide a Service in Lazy loaded Module, it will create a child instance that different from the rest of application
+
+		Don't provide Services in Shared Module!!! Because it is still lazy loaded in lazy component
+
+		Move Service providers from App module to Core module
+
+		Just-in-time 									vs 	Ahead-of-Time compilation
+		Compile Template on Browser 			Compile Template when building
+
+		ng build --prod --aot
+		output to dist folder
+
+		Preloading lazy loaded routes
+			(after app has loaded and having free time)
+		\src\app\app-routing.module.ts
+		@NgModule({
+		  imports: [
+		    RouterModule.forRoot(appRoutes, {preloadingStrategy: PreloadAllModules})
+		  ],
+		  exports: [RouterModule]
+		})
+
+======== Deploying an Angular App
+
+	Step:
+		Build with --proc mode
+		Consider AoT compilation
+		Set correct <base> element because there is a case that Angular app is not run on root domain but nested domain
+		Make sure Server ALWAYS returns index.html
+
+	Deploy on AWS S3:
+		Static Website Hosting
+			Index Document: index.html
+			Error Document: index.html
+		Permission:
+			Grant read-only permission for guest
+		index.html (in case need to change <base>)
+			<base href="/">
+		Build --proc --aot
+		Upload all files under built package (dist folder)
+		DONE
+
+
+======== State Management - Working with NgRx in our Project
 	Side effects? ngrx/effects
 	store-devtools
 	Redux devtools
@@ -285,8 +677,64 @@ State Management - Working with NgRx in our Project
 		Service vs NgRx? It depend
 	https://blog.nrwl.io/managing-state-in-angular-applications-22b75ef5625f
 
+	Service is suitable for small application. When application grow, it will cause complexibility of communication direction.
+	Instead of that, we can use centralized approach: Redux
 
-Angular Universal
+
+	*********** KEY TO TAKE AWAY ***********
+	Using SERVICE to handle logic, communicate with back-end and other services, API
+	Using STATE management (Redux) to store the state using in application's components
+
+	export function shoppingListReducer(state = initialState, action: ShoppingListActions.ShoppingListActions) {
+  switch (action.type) {
+    case ShoppingListActions.ADD_INGREDIENT:
+      return {	// return new object
+        ...state,	// include all properties in state
+        ingredients: [...state.ingredients, action.payload] // modify ingredients properties to add more data (action.payload)
+      };
+    case ShoppingListActions.ADD_INGREDIENTS:
+      return {
+        ...state,
+        ingredients: [...state.ingredients, ...action.payload]
+      };
+    ...
+
+    Union type:
+    export type ShoppingListActions =
+  		AddIngredient |
+  		AddIngredients;
+    https://blog.angulartraining.com/union-types-in-typescript-2517a82a1ea0
+
+    store.select('xxx');	// xxx is reducer name, return the state of that reducer
+
+    Side effects: - pure function must not change the state. if it does, we get side effects
+    	Reducer cannot async, cannot return a promise
+    319 Using Authentication.mp4
+    
+    Solve side effect: 324 A Closer Look at Effects
+    	auth.effects.ts
+
+   	Only dispatch action (to change application state/store) from component.ts, not from service: it cause side effect???
+   		326 Effects - How they Work
+
+   	Ngrx Router Store:
+   		StoreRouterConnectingModule
+
+   	Store Devtools (only for dev env)
+   		!environment.production ? StoreDevtoolsModule.instrument() : []
+   		npm install --save ...
+   		Chrome: Redux DevTools
+   		Check more on environments folder
+
+   		F12 --> Redux
+
+    Redux for Lazy load component:
+
+    	TODO
+
+
+
+======== Angular Universal
 	Client side rendering: Client render HTML page by JS => cannot optimize for Search engine
 	Server side rendering: Server render HTML by JS and response to Client. Note: lazy initializing
 	https://github.com/angular/angular-cli/wiki/stories-universal-rendering
@@ -294,46 +742,31 @@ Angular Universal
 		Never directly access to the DOM, because on Server side, there is no DOM
 
 
-Unit Testing in Angular Apps
+======== Unit Testing in Angular Apps
+	*.spec.ts
+	ng test
+
+
+======== Angular CLI
+	https://www.tektutorialshub.com/angular/angular-cli-tutorial/
+	
 
 
 
-What's new in Angular 4, 5, 6, 7
+======== What's new in Angular 4, 5, 6, 7
 	https://blog.ninja-squad.com/2017/03/24/what-is-new-angular-4/
 
 
 
-Custom Project  Workflow Setup
+======== Custom Project  Workflow Setup
 
 
-TypeScript Introduction (for Angular 2 Usage)
+======== TypeScript Introduction (for Angular 2 Usage)
 
 
-Angular Animations
+======== Angular Animations
 
-Useful links:
+======== Useful links:
 	https://github.com/stefanoslig/angular-ngrx-nx-realworld-example-app
 
 
-Core features of Angular
-- Component
-- Binding (data, event), two-ways bindings (https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html)
-- Directives
-
-
-@Input(): used for parent can pass data into children components
-@Output(): used for other component can get data from it
-
-
-
-Event, emit...
-
-Observables
-
-CSS is encapsulated in component scope
-
-24
-ES6: ... Spread operator
-rxjs
-slice()
-arrow function
