@@ -5,17 +5,30 @@ https://www.udemy.com/the-complete-guide-to-angular-2/
 Reference:
 	https://www.tektutorialshub.com/angular-2-tutorial/
 
-======== Project structure:
+======== Project structure (Best Practices)
 
-https://angular.io/guide/file-structure
+https://www.tektutorialshub.com/angular/angular-folder-structure-best-practices/
+	Root Module
+		The Angular requires one module to be loaded as the application starts. We call this as root module. The root module loads the root component and all other modules
+	Feature Module
+		The Features Module implements a specific feature of the Application. All the components, pipes & directives which implement the feature become the part of the module.
+	Shared Module
+		There are many components, directives & pipes, which we may like to share across various modules. All these components should go into shared module.
+		The shared module and must declare the components, pipes and directives using the declarations metadata and export it using the exports metadata
+		The Other Modules can import the shared modules and use the exported components, directives & pipes
+		** The Services must not be defined here.
+		The commonly required angular modules like ( CommonModule, FormsModule etc) or third party modules can be imported here and re exported.
+	Core Module
+		The core module must be imported only in the root module. Other modules must not import the core modules.
 
-	1. Loading the Angular Core Libraries
-	2. Loading the Main entry point
-	3. Loading the Root Module
-	4. Loading the Root Component
-	5. Loading the Template
 
-	014 How an Angular App gets Loaded and Started
+======== 014 How an Angular App gets Loaded and Started
+
+		1. Loading the Angular Core Libraries
+		2. Loading the Main entry point
+		3. Loading the Root Module
+		4. Loading the Root Component
+		5. Loading the Template
 
 	The Angular finds out about the entry point of our application from the configuration file angular-cli.json
 		"index": "index.html",
@@ -77,26 +90,6 @@ https://angular.io/guide/file-structure
 
 	.angular-cli.json
 		Configuration for Angular app
-
-Angular Folder Structure Best Practices
-https://www.tektutorialshub.com/angular/angular-folder-structure-best-practices/
-	Root Module
-		The Angular requires one module to be loaded as the application starts. We call this as root module. The root module loads the root component and all other modules
-	Feature Module
-		The Features Module implements a specific feature of the Application. All the components, pipes & directives which implement the feature become the part of the module.
-	Shared Module
-		There are many components, directives & pipes, which we may like to share across various modules. All these components should go into shared module.
-		The shared module and must declare the components, pipes and directives using the declarations metadata and export it using the exports metadata
-		The Other Modules can import the shared modules and use the exported components, directives & pipes
-		** The Services must not be defined here.
-		The commonly required angular modules like ( CommonModule, FormsModule etc) or third party modules can be imported here and re exported.
-	Core Module
-		The core module must be imported only in the root module. Other modules must not import the core modules.
-
-
-======== Debugging
-	- Angular support Source map
-	- Or we can install Augury extension: https://augury.rangle.io/
 
 
 ======== Components
@@ -328,6 +321,7 @@ https://www.tektutorialshub.com/angular/angular-folder-structure-best-practices/
 	There are two style of binding:
 		defaultColor="yellow"
 		[defaultColor]="'yellow'"
+		<img bind-src="angularLogo"> // add bind-
 
 	The asterisk (*) prefix
 	*ngIf will internally be converted to
@@ -335,7 +329,7 @@ https://www.tektutorialshub.com/angular/angular-folder-structure-best-practices/
 	https://angular.io/guide/structural-directives#the-asterisk--prefix
 
 
-Using Pipes to Transform Output
+======== Using Pipes to Transform Output
 	Angular 2 Pipes helps us to format or transform data to display in our template. They are similar to Filters in AngularJS
 
 	{{ server.instanceType | uppercase }}
@@ -366,7 +360,9 @@ Using Pipes to Transform Output
 
 ======== Using Services & Dependency Injection
 
+	Angular Injector
 	@Injectable
+	@Inject
 
 	To make it simple to develop application. Instead of using event and binding between components
 	Hierarchical Injector:
@@ -395,6 +391,136 @@ Using Pipes to Transform Output
 
 
 ======== Changing Pages with Routing
+
+	https://www.tektutorialshub.com/angular/angular-routing-between-modules/
+
+	Components of Router Module:
+		Router
+		Route
+		Routes
+		RouterOutlet
+			is a directive (<router-outlet>) that serves as a placeholder, where the router should display the view
+		RouterLink
+			is a directive that binds the HTML element to a Route
+		RouterLinkActive
+			is a directive for adding or removing classes from an HTML element that is bound to a RouterLink
+		ActivatedRoute
+			is an object that represents the currently activated route associated with the loaded Component
+		RouterState
+			current state of the router including a tree of the currently activated routes together with convenience methods for traversing the route tree.
+		RouteLink Parameters array
+			The Parameters or arguments to the Route
+
+	How to configure Angular Router
+		Set the <base href>
+			specifies the base URL to use for all relative URLs. The Angular Router uses the HTML5 style of Routing
+		Define routes for the view
+			app.routes.ts
+			export const appRoutes: Routes = [
+			  { path: 'home', component: HomeComponent },
+			  { path: 'product', component: ProductComponent },
+			  { path: '', redirectTo: 'home', pathMatch: 'full' }, // Default route
+			  { path: '**', component: ErrorComponent } // Wild Card Route
+			];
+		Register the Router Service with Routes
+			app.module.ts
+			imports: [RouterModule.forRoot(routes)],
+		Map HTML Element actions to Route
+			<a [routerLink]="['detail',product.productID]">{{product.name}} </a>
+		Choose where you want to display the view
+			<router-outlet></router-outlet>
+
+
+	Angular supports two Location Strategies:
+		HashLocationStrategy
+			Where URL looks like http://localhost:4200/#/product
+			imports: [
+		    Hashlocationstrategy RouterModule.forRoot(appRoutes, { useHash: true }
+			],
+		PathLocationStrategy
+			Where URL looks like http://localhost:4200/product
+			The PathLocationStrategy is the default strategy in Angular 2 application.
+
+	Pass parameters to Angular Route
+		{ path: 'product/:id/:id1/:id2', component: ProductDetailComponent }
+
+	ActviatedRoute
+		constructor(private _Activatedroute:ActivatedRoute)
+		There are two ways in which you can use the ActivatedRoute to get the parameter value
+			Using Snapshot
+				this.id=this._Activatedroute.snapshot.params['id'];
+			Using observable
+				ngOnInit() {
+			    this.sub=this._Activatedroute.params.subscribe(params => { 
+			        this.id = params['id']; 
+			        let products=this._productService.getProducts();
+			        this.product=products.find(p => p.productID==this.id);    
+			      });
+			  }
+				When the user navigates to the component again, the Angular does not create the new component but reuses the existing instance. By subscribing to the observable params property, you will retrieve the latest value of the parameter and update the component accordingly.
+				ngOnDestroy() {
+				    this.sub.unsubscribe();
+				}
+
+	Child Routes / Nested Routes
+		{ path: 'product', component: ProductComponent,
+		  children: [
+		     { path: 'detail/:id', component: ProductDetailComponent }
+		  ],
+
+	Passing Optional (Query) Parameters to a route
+		<a [routerLink]="['product']" [queryParams]="{ val1:2 , val2:10}">Whatever</a>
+		Programmatically way:
+		goToPage(pageNum) {
+    	this.router.navigate(['/product'], { queryParams: { page: pageNum } });
+		}
+
+		this.sub = this.route.queryParams
+	    .subscribe(params => {
+	        this.pageNum = +params['pageNum']||0; 
+	    });
+
+	Navigating between Angular routes
+	You can navigate between routes in Angular 2 in two ways
+		Using RouterLink Directive
+			<li><a [routerLink]="['product/detail/1']">Product 1 Overview</a></li>
+		Via Code
+			this._router.navigate(['product/detail/1'])
+
+			this._router.navigate(['detail'], { queryParams: { pageNum: this.pageNum + 1 }, relativeTo: this._Activatedroute } ); // relative path
+
+	Angular Route Guards
+	The Angular Router supports Five different guards, which you can use to protect the route
+		CanActivate
+			decides if a route can be activated (or component gets used). Useful in the circumstance where the user is not authorized to navigate to the target component
+		CanDeactivate
+			This Guard decides if the user can leave the component. You might ask the user if it’s OK to discard pending changes rather than save them.
+		Resolve
+			This guard delays the activation of the route until some tasks are completed. You can use the guard to pre-fetch the data from the backend API, before activating the route
+		CanLoad
+			This guard is used to guard the routes that load feature modules dynamically
+		CanActivateChild
+			This guard determines whether a child route can be activated.
+
+	Building the Guards are very easy.
+		Build the Guard as Service.
+			@Injectable()
+			export class ProductGuardService implements CanActivate {}
+		Implement the Guard Method in the Service
+			canActivate(): boolean {    
+			    // Check weather the route can be activated;    
+			    return true;     
+			    // or false if you want to cancel the navigation; 
+			}
+		Register the Guard Service in the Root Module
+			providers: [ProductService,ProductGuardService]
+		Update the Routes to use the guards
+			{ path: 'product', 
+			  component: ProductComponent, 
+			  canActivate : [ProductGuardService, AnotherProductGuardService ] 
+			}
+
+	---- Udemy
 	Setting Routes at app.module.ts but we should extract route setting to separate module
 	In *.html
 		<router-outlet>
@@ -406,41 +532,6 @@ Using Pipes to Transform Output
 		xxx: relative path
 		routerLinkActive="active" (active is a css class)
 			exact: true
-
-		Router programmically
-			router.navigate(['/servers'], {relativeTo: ...});
-
-		user/:id
-		Using ActivatedRoute.snapshot.params['id']
-		Reactive approach:
-			ActivatedRoute.params.subscribe(...)
-
-		Remember to unsubscribe ngOnDestroy
-
-		Child nested route:
-			{ path: '', component: HomeComponent },
-			  { path: 'users', component: UsersComponent, children: [
-			    { path: ':id/:name', component: UserComponent }
-			  ] }
-
-		Wildcard:
-			"**": not-found...
-
-		Protecting route with Guard
-			AuthGuard implements CanActivate {
-				canActivate(...) {
-					return true/false;
-				}
-			}
-
-			{path: 'xxx', canActivate: [AuthGuard], ...}
-
-			CanActivateChild
-
-			We can control route when canDeactivate
-
-
-	https://www.tektutorialshub.com/angular/angular-routing-between-modules/
 
 
 ======== Observables
@@ -708,6 +799,13 @@ Using Pipes to Transform Output
     store.select('xxx');	// xxx is reducer name, return the state of that reducer
 
     Side effects: - pure function must not change the state. if it does, we get side effects
+
+    Ngrx effects
+		So what is a side effect? Its piece of code that catches our Actions more or less the same way as our reducers do, but instead of changing something in our state, they actually send API requests and, on the result, dispatch new Actions.
+		So, “evaluation of the result does not cause any semantically observable side effect or output, such as mutation of mutable objects or output to I/O devices”
+		https://medium.freecodecamp.org/why-redux-needs-reducers-to-be-pure-functions-d438c58ae468
+
+
     	Reducer cannot async, cannot return a promise
     319 Using Authentication.mp4
     
@@ -763,10 +861,104 @@ Using Pipes to Transform Output
 
 ======== TypeScript Introduction (for Angular 2 Usage)
 
+	Interface
+	http://www.typescriptlang.org/docs/handbook/interfaces.html
+		function printLabel(labelledObj: { label: string }) {
+		    console.log(labelledObj.label);
+		}
+
+		let myObj = {size: 10, label: "Size 10 Object"};
+		printLabel(myObj);
+
+		==>
+		interface LabelledValue {
+   			label: string;
+		}
+
+		function printLabel(labelledObj: LabelledValue) {
+		    console.log(labelledObj.label);
+		}
+
+		let myObj = {size: 10, label: "Size 10 Object"};
+		printLabel(myObj);
+
+		Interface can also have method()
+		interface ClockInterface {
+		    tick();
+		}
+
+	Class
+		Parameter properties
+		class Octopus {
+		    readonly numberOfLegs: number = 8;
+		    constructor(readonly name: string) {
+		    }
+		}
+
+		Getter/Setter
+		let passcode = "secret passcode";
+
+		class Employee {
+		    private _fullName: string;
+
+		    get fullName(): string {
+		        return this._fullName;
+		    }
+
+		    set fullName(newName: string) {
+		        if (passcode && passcode == "secret passcode") {
+		            this._fullName = newName;
+		        }
+		        else {
+		            console.log("Error: Unauthorized update of employee!");
+		        }
+		    }
+		}
+
+		let employee = new Employee();
+		employee.fullName = "Bob Smith";
+		if (employee.fullName) {
+		    console.log(employee.fullName);
+		}
+
+		Abstract class
+		abstract class Animal {
+		    abstract makeSound(): void;
+		    move(): void {
+		        console.log("roaming the earth...");
+		    }
+		}
+
+		Generic:
+		function identity<T>(arg: T): T {
+		    return arg;
+		}
+
+		let output = identity<string>("myString");  // type of output will be 'string'
+
+		Enum
+		enum Response {
+		    No = 0,
+		    Yes = 1,
+		}
+
 
 ======== Angular Animations
 
 ======== Useful links:
 	https://github.com/stefanoslig/angular-ngrx-nx-realworld-example-app
+	https://go.tiny.cloud/blog/angular-5-tutorial-step-step-guide-first-angular-5-app/
 
+
+======== Boostrap
+	https://fullstack-developer.academy/add-bootstrap-to-an-angular-application/
+	https://ng-bootstrap.github.io/#/home
+
+
+======== Angular dev tools
+	- Debugging: Augury extension: https://augury.rangle.io/
+	- Store devtools: Redux devtools: https://blog.angular-university.io/angular-ngrx-devtools/
+	- Visual code:
+					https://medium.com/frontend-coach/7-must-have-visual-studio-code-extensions-for-angular-af9c476147fd
+					https://marketplace.visualstudio.com/items?itemName=loiane.angular-extension-pack
 
